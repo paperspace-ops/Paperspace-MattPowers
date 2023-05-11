@@ -1,0 +1,11 @@
+# target/Dockerfile
+FROM ubuntu:20.04
+
+RUN apt-get update && \
+    apt-get install -y python3 openssh-server && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN mkdir /var/run/sshd && \
+    echo 'root:root' | chpasswd
+
+CMD ["/usr/sbin/sshd", "-D"]

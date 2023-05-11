@@ -1,0 +1,17 @@
+# Creates an ansible admin host, prometheus host, and a test machine to configure with ansible anmd prometheus.
+# Docker Compose is used because it creates all of the containers on the same network which makes testing fast and easy.
+
+version: '3.8'
+services:
+  ansible_host:
+    build: ./ansible_host
+    volumes:
+      - ./ansible:/ansible
+      
+  prometheus:
+    build: ./prometheus_host
+    ports:
+      - '9090:9090'
+
+  target:
+    build: ./test
