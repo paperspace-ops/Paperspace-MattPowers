@@ -1,0 +1,18 @@
+groups:
+- name: alert_rules
+  rules:
+  - alert: HighNetworkUtilization
+    expr: rate(node_network_receive_bytes_total[2m]) / on(device) group_left node_network_speed_bytes >= 0.7
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      description: Network interface utilization is above 70%.
+
+  - alert: HighDiskIO
+    expr: (rate(node_disk_io_time_seconds_total[2m]) / on(device) group_left node_disk_io_time_seconds_total >= 200e6)
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      description: Disk read/write rate is above 200 MB/s.

@@ -1,0 +1,39 @@
+- name: Configure test host
+  hosts: test
+  become: yes
+
+  tasks:
+  - name: Install necessary dependencies
+    apt:
+      name:
+      - prometheus
+      - node_exporter
+      state: present
+      update_cache: yes
+
+  - name: Start and enable Prometheus service
+    systemd:
+      name: prometheus
+      state: started
+      enabled: yes
+
+  - name: Start and enable Node Exporter service
+    systemd:
+      name: node_exporter
+      state: started
+      enabled: yes
+
+  - name: Create directory for Prometheus alert rules
+    file:
+      path: /etc/prometheus/rules
+      state: directory
+
+  - name: Copy alert rules file to host
+    copy:
+      src: /ansible/alert_rules.yml
+      dest: /etc/prometheus/rules
+
+  - name: Reload Prometheus service to apply alert rules
+    systemd:
+      name: prometheus
+      state: reloaded

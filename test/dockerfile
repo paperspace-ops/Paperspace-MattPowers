@@ -1,4 +1,5 @@
-# target/Dockerfile
+# test/Dockerfile
+
 FROM ubuntu:20.04
 
 RUN apt-get update && \
@@ -7,5 +8,14 @@ RUN apt-get update && \
 
 RUN mkdir /var/run/sshd && \
     echo 'root:root' | chpasswd
+
+RUN echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config
+
+
+# exposes the port for Node Exporter
+EXPOSE 9100
+
+
+
 
 CMD ["/usr/sbin/sshd", "-D"]
