@@ -6,34 +6,31 @@
   - name: Install necessary dependencies
     apt:
       name:
-      - prometheus
-      - node_exporter
+      - python3-pip
       state: present
       update_cache: yes
 
-  - name: Start and enable Prometheus service
-    systemd:
-      name: prometheus
-      state: started
-      enabled: yes
+  - name: Download Prometheus
+    get_url:
+      url: https://github.com/prometheus/prometheus/releases/download/v2.31.1/prometheus-2.31.1.linux-amd64.tar.gz
+      dest: /tmp
 
-  - name: Start and enable Node Exporter service
-    systemd:
-      name: node_exporter
-      state: started
-      enabled: yes
+  - name: Extract Prometheus archive
+    unarchive:
+      src: /tmp/prometheus-2.31.1.linux-amd64.tar.gz
+      dest: /opt
+      remote_src: yes
+      creates: /opt/prometheus-2.31.1.linux-amd64
 
-  - name: Create directory for Prometheus alert rules
+  - name: Create symbolic link for Prometheus
     file:
-      path: /etc/prometheus/rules
-      state: directory
+      src: /opt/prometheus-2.31.1.linux-amd64
+      dest: /opt/prometheus
+      state: link
 
-  - name: Copy alert rules file to host
+  - name: Create Prometheus service file
     copy:
-      src: /ansible/alert_rules.yml
-      dest: /etc/prometheus/rules
-
-  - name: Reload Prometheus service to apply alert rules
-    systemd:
-      name: prometheus
-      state: reloaded
+      dest: /etc/systemd/system/prometheus.service
+      content: |
+        [Unit]
+        Description=Prometheus Server
