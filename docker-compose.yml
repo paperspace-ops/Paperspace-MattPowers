@@ -12,6 +12,8 @@ services:
     build: ./prometheus_host
     ports:
       - '9090:9090'
+    volumes:
+      - ./alert_rules:/etc/prometheus/rules
 
   test:
     build: ./test
